@@ -1,0 +1,4 @@
+d /var/lib/roadsafe-radar 0750 tomdev tomdev -
+d /var/lib/roadsafe-radar/spool 0750 tomdev tomdev -
+d /var/lib/roadsafe-radar/updates 0750 tomdev tomdev -
+d /var/log/roadsafe-radar 0750 tomdev tomdev -

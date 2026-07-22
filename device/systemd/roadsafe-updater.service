@@ -1,0 +1,13 @@
+[Unit]
+Description=RoadSafe verified release updater
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+EnvironmentFile=/etc/roadsafe-radar/device.env
+ExecStart=/home/tomdev/Documents/SpeedRadarProject/venv/bin/python /opt/roadsafe-radar/bootstrap/updater.py
+PrivateTmp=true
+ProtectHome=read-only
+ReadWritePaths=/opt/roadsafe-radar /var/lib/roadsafe-radar /var/log/roadsafe-radar

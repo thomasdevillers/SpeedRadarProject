@@ -1,0 +1,23 @@
+[Unit]
+Description=RoadSafe radar cloud agent
+After=network-online.target run_radar.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tomdev
+Group=tomdev
+WorkingDirectory=/opt/roadsafe-radar/current
+EnvironmentFile=/etc/roadsafe-radar/device.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/tomdev/Documents/SpeedRadarProject/venv/bin/python /opt/roadsafe-radar/current/cloud_agent.py
+Restart=always
+RestartSec=10
+NoNewPrivileges=false
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/roadsafe-radar /var/log/roadsafe-radar
+
+[Install]
+WantedBy=multi-user.target

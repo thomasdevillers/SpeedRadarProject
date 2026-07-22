@@ -1,0 +1,24 @@
+[Unit]
+Description=RoadSafe radar capture service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tomdev
+Group=tomdev
+WorkingDirectory=/opt/roadsafe-radar/current
+EnvironmentFile=/etc/roadsafe-radar/device.env
+Environment=PYTHONUNBUFFERED=1
+ExecStartPre=+/usr/sbin/ip address replace 192.168.1.10/24 dev eth0
+ExecStart=/home/tomdev/Documents/SpeedRadarProject/venv/bin/python /opt/roadsafe-radar/current/radar_real_ocr.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/roadsafe-radar /var/log/roadsafe-radar
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+tomdev ALL=(root) NOPASSWD: /usr/bin/systemctl restart run_radar.service
+tomdev ALL=(root) NOPASSWD: /usr/bin/systemctl start roadsafe-updater.service
+tomdev ALL=(root) NOPASSWD: /usr/bin/systemctl reboot
+

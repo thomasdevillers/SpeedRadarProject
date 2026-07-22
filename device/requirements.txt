@@ -1,0 +1,6 @@
+requests==2.32.3
+psutil==7.0.0
+pyserial==3.5
+opencv-python==4.13.0.92
+cryptography==43.0.0
+
