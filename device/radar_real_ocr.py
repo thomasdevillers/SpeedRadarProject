@@ -130,7 +130,21 @@ def capture_photo(capture: cv2.VideoCapture, speed: int, diagnostic: bool = Fals
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
             prefix = "diagnostic" if diagnostic else f"{speed:03d}kph"
             path = SPOOL_DIR / f"{timestamp}_{prefix}.jpg"
-            if not cv2.imwrite(str(path), frame, [int(cv2.IMWRITE_JPEG_QUALITY), 92]):
+            output_frame = frame
+            jpeg_quality = 92
+            if diagnostic:
+                # Camera tests are dashboard previews, so keep them small enough
+                # to upload reliably over a constrained mobile connection.
+                max_width = 1280
+                if frame.shape[1] > max_width:
+                    scale = max_width / frame.shape[1]
+                    output_frame = cv2.resize(
+                        frame,
+                        (max_width, round(frame.shape[0] * scale)),
+                        interpolation=cv2.INTER_AREA,
+                    )
+                jpeg_quality = 82
+            if not cv2.imwrite(str(path), output_frame, [int(cv2.IMWRITE_JPEG_QUALITY), jpeg_quality]):
                 raise RuntimeError(f"OpenCV could not write {path}")
             return capture, path
         except Exception:

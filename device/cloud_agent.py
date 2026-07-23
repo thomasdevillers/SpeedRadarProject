@@ -199,7 +199,7 @@ class Agent:
                     if not upload_url or not photo_path:
                         raise RuntimeError("cloud did not provide a diagnostic photo upload")
                     with image_path.open("rb") as photo:
-                        upload = requests.put(upload_url, data=photo, headers={"content-type": "image/jpeg"}, timeout=(10, 90))
+                        upload = requests.put(upload_url, data=photo, headers={"content-type": "image/jpeg"}, timeout=(15, 240))
                     upload.raise_for_status()
                     return {"photoPath": photo_path, "capturedAt": utc_now()}
                 if local and local["status"] == "failed":
