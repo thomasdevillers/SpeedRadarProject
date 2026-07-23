@@ -8,6 +8,7 @@ import {
   Camera,
   FileChartColumn,
   Gauge,
+  ListChecks,
   RadioTower,
   Rocket,
   Settings2,
@@ -26,6 +27,7 @@ const mainNav = [
 ];
 
 const adminNav = [
+  { href: "/admin/onboarding", label: "Onboard radar", icon: ListChecks },
   { href: "/admin/clients", label: "Clients", icon: Building2 },
   { href: "/admin/fleet", label: "Fleet control", icon: Settings2 },
   { href: "/admin/deployments", label: "Deployments", icon: Rocket },
@@ -67,4 +69,3 @@ export function Sidebar({ role }: { role: UserRole }) {
     </aside>
   );
 }
-

@@ -32,6 +32,27 @@ test("admin can reach client, fleet, and deployment workspaces", async ({ page }
   await expect(page.getByRole("heading", { name: "Deployments", exact: true })).toBeVisible();
 });
 
+test("admin can complete the guided radar onboarding flow", async ({ page }) => {
+  await page.goto("/admin/onboarding");
+  await expect(page.getByRole("heading", { name: "Onboard a radar", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Continue to hardware" }).click();
+
+  await page.getByLabel("Radar name").fill("RSR-0099");
+  await page.getByLabel("Serial number").fill("RSR-2026-0099");
+  await page.getByRole("button", { name: "Provision & continue" }).click();
+
+  await expect(page.getByText("Activation token — save before leaving this page")).toBeVisible();
+  await page.getByLabel("Site name and direction").fill("Test Lane · Northbound");
+  await page.getByRole("button", { name: "Assign radar" }).click();
+
+  await expect(page.getByRole("heading", { name: "Install and activate" })).toBeVisible();
+  await page.getByRole("button", { name: "Continue to live checks" }).click();
+  await page.getByRole("button", { name: "Test camera" }).click();
+  await expect(page.locator(".commission-photo img")).toBeVisible();
+  await page.getByRole("button", { name: "Complete onboarding" }).click();
+  await expect(page.getByRole("heading", { name: "RSR-0099 is ready" })).toBeVisible();
+});
+
 test("camera test displays its uploaded diagnostic frame", async ({ page }) => {
   await page.goto("/devices/rsr-0001");
   const testCamera = page.getByRole("button", { name: "Test camera" });
