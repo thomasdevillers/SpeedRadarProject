@@ -1,4 +1,4 @@
-import type { DashboardData, OrganizationSummary, RadarEvent } from "@/lib/types";
+import type { DashboardData, DeviceAssignmentSummary, OrganizationSummary, RadarEvent } from "@/lib/types";
 
 const now = Date.now();
 const minutesAgo = (minutes: number) => new Date(now - minutes * 60_000).toISOString();
@@ -138,3 +138,16 @@ export const demoOrganizations: OrganizationSummary[] = [
   { id: "org-archived", name: "Northern Logistics", status: "suspended", memberCount: 1, deviceCount: 0 },
 ];
 
+export const demoAssignments: DeviceAssignmentSummary[] = [{
+  id: "assignment-demo-001",
+  deviceId: "rsr-0001",
+  deviceName: "RSR-0001",
+  serialNumber: "RSR-2026-0001",
+  organizationId: "org-pilot",
+  organizationName: "RoadSafe Pilot",
+  siteName: "Main Road · Northbound",
+  speedLimitKph: 60,
+  startsAt: minutesAgo(60),
+  endsAt: null,
+  status: "active",
+}];

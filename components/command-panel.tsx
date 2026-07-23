@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Camera, Power, RefreshCw, RotateCcw } from "lucide-react";
 import type { CommandType } from "@/lib/types";
 
@@ -12,6 +13,7 @@ const commands: { type: CommandType; label: string; description: string; icon: t
 ];
 
 export function CommandPanel({ deviceId }: { deviceId: string }) {
+  const router = useRouter();
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState<CommandType | null>(null);
 
@@ -27,6 +29,7 @@ export function CommandPanel({ deviceId }: { deviceId: string }) {
         if (!response.ok) throw new Error(await response.text());
       }
       setMessage(`${type.replaceAll("_", " ")} queued successfully.`);
+      router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to send command");
     } finally {
@@ -45,4 +48,3 @@ export function CommandPanel({ deviceId }: { deviceId: string }) {
     </div>
   );
 }
-

@@ -30,7 +30,10 @@ export function apiError(error: unknown): Response {
   if (error instanceof ZodError) return Response.json({ error: "Invalid request", issues: error.issues.map((issue) => ({ path: issue.path.join("."), message: issue.message })) }, { status: 400 });
   const code = typeof error === "object" && error !== null && "code" in error ? String(error.code) : "";
   const message = typeof error === "object" && error !== null && "message" in error ? String(error.message) : "Request could not be completed";
-  if (["23505", "23P01"].includes(code)) return Response.json({ error: message }, { status: 409 });
+  if (code === "23P01") return Response.json({ error: "This radar already has an overlapping assignment. Refresh the page and use Reassign radar instead." }, { status: 409 });
+  if (code === "23505") return Response.json({ error: "A record with these details already exists." }, { status: 409 });
+  if (code === "P0002") return Response.json({ error: message }, { status: 404 });
+  if (code === "P0001") return Response.json({ error: message }, { status: 409 });
   if (["23503", "23514", "22P02"].includes(code)) return Response.json({ error: message }, { status: 400 });
   return Response.json({ error: "Request could not be completed" }, { status: 500 });
 }

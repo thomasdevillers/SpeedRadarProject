@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { demoDashboard, demoEvents, demoOrganizations } from "@/lib/mock-data";
+import { demoAssignments, demoDashboard, demoEvents, demoOrganizations } from "@/lib/mock-data";
 import { isDemoMode } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
-import type { DashboardData, DeploymentSummary, OrganizationSummary, RadarEvent, ReleaseSummary, UserRole } from "@/lib/types";
+import type { DashboardData, DeploymentSummary, DeviceAssignmentSummary, OrganizationSummary, RadarEvent, ReleaseSummary, UserRole } from "@/lib/types";
 
 export interface ViewerContext {
   userId: string;
@@ -115,6 +115,35 @@ export async function getOrganizations(): Promise<OrganizationSummary[]> {
   const { data, error } = await supabase.rpc("get_organization_summaries");
   if (error) throw new Error(`Unable to load organizations: ${error.message}`);
   return data as OrganizationSummary[];
+}
+
+export async function getDeviceAssignments(): Promise<DeviceAssignmentSummary[]> {
+  if (isDemoMode()) return demoAssignments;
+  const supabase = await createClient();
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("device_assignments")
+    .select("id, device_id, organization_id, site_name, speed_limit_kph, starts_at, ends_at, devices(name, serial_number), organizations(name)")
+    .or(`ends_at.is.null,ends_at.gt.${now}`)
+    .order("starts_at", { ascending: true });
+  if (error) throw new Error(`Unable to load radar assignments: ${error.message}`);
+  return (data ?? []).map((row) => {
+    const device = row.devices as unknown as { name: string; serial_number: string } | null;
+    const organization = row.organizations as unknown as { name: string } | null;
+    return {
+      id: row.id,
+      deviceId: row.device_id,
+      deviceName: device?.name ?? "Unknown radar",
+      serialNumber: device?.serial_number ?? "Unknown serial",
+      organizationId: row.organization_id,
+      organizationName: organization?.name ?? "Unknown client",
+      siteName: row.site_name,
+      speedLimitKph: row.speed_limit_kph,
+      startsAt: row.starts_at,
+      endsAt: row.ends_at,
+      status: new Date(row.starts_at).getTime() > Date.now() ? "scheduled" : "active",
+    };
+  });
 }
 
 export async function getDeploymentData(): Promise<{ releases: ReleaseSummary[]; deployments: DeploymentSummary[] }> {

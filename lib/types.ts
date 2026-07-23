@@ -34,6 +34,20 @@ export interface DeviceSummary {
   queueDepth: number;
 }
 
+export interface DeviceAssignmentSummary {
+  id: string;
+  deviceId: string;
+  deviceName: string;
+  serialNumber: string;
+  organizationId: string;
+  organizationName: string;
+  siteName: string;
+  speedLimitKph: number;
+  startsAt: string;
+  endsAt: string | null;
+  status: "active" | "scheduled";
+}
+
 export interface RadarEvent {
   id: string;
   deviceEventId: string;

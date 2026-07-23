@@ -99,6 +99,7 @@ h3 { margin-bottom: 0; font-size: 1.45rem; line-height: 1; }
 .button.primary:hover { background: var(--orange-dark); border-color: var(--orange-dark); }
 .button.secondary { background: transparent; border-color: var(--line); }
 .button.secondary:hover { background: var(--white); border-color: var(--ink); }
+.button:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
 .button.small { min-height: 35px; padding-inline: 12px; font-size: .61rem; }
 .button.full { width: 100%; }
 .text-link { display: inline-flex; align-items: center; gap: 13px; font-family: var(--mono); font-size: .68rem; font-weight: 750; text-transform: uppercase; }
@@ -278,12 +279,46 @@ input:focus, select:focus { border-color: var(--orange); outline: 2px solid rgba
 .delivery-note span { color: var(--muted); font-size: .7rem; }
 
 .inline-create-form { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto; align-items: end; gap: 12px; padding: 22px; }
-.inline-create-form > p { grid-column: 1 / -1; min-height: 1em; margin: 0; color: var(--success); font-family: var(--mono); font-size: .6rem; }
+.inline-create-form > p { grid-column: 1 / -1; min-width: 0; min-height: 1em; margin: 0; color: var(--success); font-family: var(--mono); font-size: .6rem; overflow-wrap: anywhere; }
 .workflow-form { display: grid; grid-template-columns: repeat(4, minmax(140px, 1fr)) auto; align-items: end; gap: 12px; padding: 22px; }
 .workflow-form label { display: grid; gap: 6px; }
 .workflow-form label > span { font-family: var(--mono); font-size: .57rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .workflow-form > p { grid-column: 1 / -1; min-height: 1em; margin: 0; color: var(--success); font-family: var(--mono); font-size: .6rem; }
-.assignment-form { grid-template-columns: repeat(5, minmax(130px, 1fr)) auto; }
+.assignment-workspace { display: grid; }
+.assignment-form { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; gap: 15px 12px; padding: 24px; background: linear-gradient(135deg, rgba(231,227,217,.48), transparent 62%); }
+.assignment-form label { min-width: 0; display: grid; gap: 7px; }
+.assignment-form label > span { color: var(--muted); font-family: var(--mono); font-size: .57rem; font-weight: 750; letter-spacing: .075em; text-transform: uppercase; }
+.assignment-form input, .assignment-form select { width: 100%; min-width: 0; min-height: 46px; }
+.assignment-form-intro { grid-column: 1 / -1; display: grid; gap: 3px; padding: 1px 0 12px 13px; border-left: 3px solid var(--orange); }
+.assignment-form-intro strong { font-family: var(--display); font-size: 1rem; letter-spacing: -.02em; text-transform: uppercase; }
+.assignment-form-intro span { color: var(--muted); font-size: .7rem; }
+.assignment-device { grid-column: span 6; }
+.assignment-client { grid-column: span 6; }
+.assignment-site { grid-column: span 5; }
+.assignment-limit { grid-column: span 2; }
+.assignment-start { grid-column: span 3; }
+.assignment-submit { grid-column: span 2; width: 100%; min-height: 46px; padding-inline: 10px; }
+.assignment-message { grid-column: 1 / -1; min-height: 1.1em; margin: 0; color: var(--success); font-family: var(--mono); font-size: .62rem; }
+.assignment-register { border-top: 1px solid var(--line); }
+.assignment-register-head { min-height: 67px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 15px 24px; background: var(--paper-2); border-bottom: 1px solid var(--line); }
+.assignment-register-head > div { display: grid; }
+.assignment-register-head .eyebrow { margin-bottom: 3px; }
+.assignment-register-head strong { font-family: var(--display); font-size: 1rem; text-transform: uppercase; }
+.assignment-register-head > span { color: var(--muted); font-family: var(--mono); font-size: .58rem; text-transform: uppercase; }
+.assignment-list { display: grid; }
+.assignment-row { min-width: 0; display: grid; grid-template-columns: minmax(150px, 1.15fr) minmax(130px, .95fr) minmax(150px, 1.05fr) minmax(175px, 1.15fr) auto auto; align-items: center; gap: 18px; padding: 16px 24px; border-bottom: 1px solid var(--line); }
+.assignment-row:last-child { border-bottom: 0; }
+.assignment-row > div { min-width: 0; display: grid; gap: 3px; }
+.assignment-row strong { overflow: hidden; font-size: .72rem; text-overflow: ellipsis; white-space: nowrap; }
+.assignment-radar { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px !important; }
+.assignment-radar > svg { color: var(--orange-dark); }
+.assignment-radar > span { min-width: 0; display: grid; }
+.assignment-radar small { color: var(--muted); font-family: var(--mono); font-size: .52rem; }
+.assignment-row-label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-family: var(--mono); font-size: .51rem; letter-spacing: .05em; text-transform: uppercase; }
+.assignment-limit-chip { min-width: 58px !important; display: flex !important; grid-template-columns: auto auto; align-items: end; gap: 3px !important; padding: 8px 10px; background: var(--ink); color: var(--white); }
+.assignment-limit-chip strong { font-family: var(--display); font-size: 1.4rem; line-height: .85; }
+.assignment-limit-chip span { color: var(--teal-light); font-family: var(--mono); font-size: .47rem; text-transform: uppercase; }
+.assignment-empty { margin: 0; padding: 22px 24px; color: var(--muted); font-size: .72rem; }
 .release-upload-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .release-upload-form label:nth-child(3), .release-upload-form > p { grid-column: 1 / -1; }
 .release-upload-form .button { justify-self: start; }
@@ -346,6 +381,8 @@ input:focus, select:focus { border-color: var(--orange); outline: 2px solid rgba
   .detail-grid, .settings-grid { grid-template-columns: 1fr; }
   .command-grid { grid-template-columns: repeat(2, 1fr); }
   .event-detail-grid { grid-template-columns: 1fr; }
+  .assignment-row { grid-template-columns: minmax(160px, 1fr) minmax(140px, 1fr) minmax(160px, 1fr) auto auto; }
+  .assignment-row > div:nth-child(4) { grid-column: 2 / 4; grid-row: 2; }
 }
 
 @media (max-width: 900px) {
@@ -364,6 +401,22 @@ input:focus, select:focus { border-color: var(--orange); outline: 2px solid rgba
   .login-shell { grid-template-columns: 1fr; }
   .login-story { min-height: 420px; }
   .login-story h1 { font-size: clamp(3.7rem, 13vw, 7rem); }
+}
+
+@media (max-width: 760px) {
+  .assignment-form { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .assignment-device, .assignment-client { grid-column: span 3; }
+  .assignment-site { grid-column: span 3; }
+  .assignment-limit { grid-column: span 1; }
+  .assignment-start { grid-column: span 2; }
+  .assignment-submit { grid-column: 1 / -1; }
+  .assignment-row { grid-template-columns: minmax(0, 1fr) auto; gap: 13px 18px; }
+  .assignment-row > div:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .assignment-row > div:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .assignment-row > div:nth-child(3) { grid-column: 1; grid-row: 3; }
+  .assignment-row > div:nth-child(4) { grid-column: 1; grid-row: 4; }
+  .assignment-row .assignment-limit-chip { grid-column: 2; grid-row: 1; }
+  .assignment-row > button { grid-column: 2; grid-row: 4; }
 }
 
 @media (max-width: 640px) {
@@ -400,6 +453,9 @@ input:focus, select:focus { border-color: var(--orange); outline: 2px solid rgba
   .inline-create-form > p { grid-column: 1; }
   .workflow-form, .assignment-form { grid-template-columns: 1fr; }
   .workflow-form > p { grid-column: 1; }
+  .assignment-form { padding: 20px 16px; }
+  .assignment-form-intro, .assignment-device, .assignment-client, .assignment-site, .assignment-limit, .assignment-start, .assignment-submit, .assignment-message { grid-column: 1; }
+  .assignment-register-head, .assignment-row { padding-left: 16px; padding-right: 16px; }
   .organization-row { grid-template-columns: auto 1fr; }
   .organization-row > .status-pill, .organization-row > .button { grid-column: 2; justify-self: start; }
   .deployment-timeline { grid-template-columns: 1fr; }

@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Mail, Plus, Trash2 } from "lucide-react";
 
 export function NotificationForm({ organizationId, initialRecipients, readOnly = false }: { organizationId: string | null; initialRecipients: string[]; readOnly?: boolean }) {
+  const router = useRouter();
   const [recipients, setRecipients] = useState(initialRecipients);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -16,6 +18,7 @@ export function NotificationForm({ organizationId, initialRecipients, readOnly =
       if (!response.ok) { setError(await response.text()); return; }
     }
     setSaved(true);
+    router.refresh();
     window.setTimeout(() => setSaved(false), 1800);
   }
   return (
