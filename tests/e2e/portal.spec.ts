@@ -32,6 +32,14 @@ test("admin can reach client, fleet, and deployment workspaces", async ({ page }
   await expect(page.getByRole("heading", { name: "Deployments", exact: true })).toBeVisible();
 });
 
+test("camera test displays its uploaded diagnostic frame", async ({ page }) => {
+  await page.goto("/devices/rsr-0001");
+  await page.getByRole("button", { name: "Test camera" }).click();
+  await expect(page.getByText("Test image captured and uploaded.")).toBeVisible();
+  await expect(page.locator(".camera-test-photo img")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open full image" })).toHaveAttribute("href", /demo-photo/);
+});
+
 test("mobile navigation remains usable", async ({ page, isMobile }) => {
   test.skip(!isMobile, "mobile project only");
   await page.goto("/devices");

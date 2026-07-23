@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { demoAssignments, demoDashboard, demoEvents, demoOrganizations } from "@/lib/mock-data";
 import { isDemoMode } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
-import type { DashboardData, DeploymentSummary, DeviceAssignmentSummary, OrganizationSummary, RadarEvent, ReleaseSummary, UserRole } from "@/lib/types";
+import type { CameraTestSummary, CommandStatus, DashboardData, DeploymentSummary, DeviceAssignmentSummary, OrganizationSummary, RadarEvent, ReleaseSummary, UserRole } from "@/lib/types";
 
 export interface ViewerContext {
   userId: string;
@@ -144,6 +144,46 @@ export async function getDeviceAssignments(): Promise<DeviceAssignmentSummary[]>
       status: new Date(row.starts_at).getTime() > Date.now() ? "scheduled" : "active",
     };
   });
+}
+
+export async function getLatestCameraTest(deviceId: string): Promise<CameraTestSummary | null> {
+  if (isDemoMode()) return {
+    id: "demo-camera-test",
+    status: "completed",
+    requestedAt: new Date(Date.now() - 10 * 60_000).toISOString(),
+    completedAt: new Date(Date.now() - 9 * 60_000).toISOString(),
+    capturedAt: new Date(Date.now() - 9 * 60_000).toISOString(),
+    photoUrl: "/api/demo-photo?variant=3",
+    error: null,
+  };
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("device_commands")
+    .select("id, status, requested_at, completed_at, result, error")
+    .eq("device_id", deviceId)
+    .eq("command_type", "capture_test")
+    .order("requested_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`Unable to load the latest camera test: ${error.message}`);
+  if (!data) return null;
+  const result = (data.result as Record<string, unknown> | null) ?? {};
+  const photoPath = typeof result.photoPath === "string" ? result.photoPath : null;
+  let photoUrl: string | null = null;
+  if (photoPath) {
+    const { data: signed, error: signedError } = await supabase.storage.from("radar-photos").createSignedUrl(photoPath, 300);
+    if (signedError) throw new Error(`Unable to load the camera test image: ${signedError.message}`);
+    photoUrl = signed.signedUrl;
+  }
+  return {
+    id: data.id,
+    status: data.status as CommandStatus,
+    requestedAt: data.requested_at,
+    completedAt: data.completed_at,
+    capturedAt: typeof result.capturedAt === "string" ? result.capturedAt : null,
+    photoUrl,
+    error: data.error,
+  };
 }
 
 export async function getDeploymentData(): Promise<{ releases: ReleaseSummary[]; deployments: DeploymentSummary[] }> {

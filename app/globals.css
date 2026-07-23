@@ -224,6 +224,7 @@ input:focus, select:focus { border-color: var(--orange); outline: 2px solid rgba
 .config-list > div:last-child, .event-facts dl > div:last-child { border: 0; }
 .config-list dt, .event-facts dt { color: var(--muted); font-size: .67rem; }
 .config-list dd, .event-facts dd { margin: 0; font-family: var(--mono); font-size: .67rem; font-weight: 750; text-align: right; }
+.command-workspace { display: grid; }
 .command-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 22px; }
 .command-button { min-height: 83px; display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--paper); border: 1px solid var(--line); cursor: pointer; text-align: left; }
 .command-button:hover { border-color: var(--ink); background: var(--white); }
@@ -233,6 +234,15 @@ input:focus, select:focus { border-color: var(--orange); outline: 2px solid rgba
 .command-button small { margin-top: 3px; color: var(--muted); font-size: .58rem; }
 .command-button:disabled { opacity: .5; cursor: wait; }
 .command-message { grid-column: 1 / -1; min-height: 1.4em; margin: 0; color: var(--success); font-family: var(--mono); font-size: .62rem; }
+.camera-test-result { display: grid; grid-template-columns: minmax(190px, .42fr) minmax(320px, 1fr); align-items: stretch; border-top: 1px solid var(--line); background: var(--paper-2); }
+.camera-test-copy { padding: 24px; border-right: 1px solid var(--line); }
+.camera-test-copy > strong, .camera-test-copy > small { display: block; }
+.camera-test-copy > strong { font-family: var(--display); font-size: 1.25rem; text-transform: uppercase; }
+.camera-test-copy > small { margin-top: 7px; color: var(--muted); font-family: var(--mono); font-size: .58rem; }
+.camera-test-copy > p { margin: 14px 0 0; color: var(--muted); font-size: .68rem; }
+.camera-test-photo { position: relative; min-height: 260px; display: block; overflow: hidden; background: var(--ink); }
+.camera-test-photo img { width: 100%; height: 100%; min-height: 260px; display: block; object-fit: cover; }
+.camera-test-photo > span { position: absolute; right: 13px; bottom: 13px; display: inline-flex; align-items: center; gap: 7px; padding: 8px 10px; color: var(--white); background: rgba(17,24,23,.88); font-family: var(--mono); font-size: .55rem; text-transform: uppercase; }
 
 .event-detail-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr); align-items: start; gap: 16px; }
 .event-photo { position: relative; margin: 0; min-height: 430px; overflow: hidden; background: var(--ink); border: 1px solid var(--ink); box-shadow: var(--shadow); }
@@ -446,6 +456,9 @@ input:focus, select:focus { border-color: var(--orange); outline: 2px solid rgba
   .telemetry-grid > div:nth-last-child(-n + 3) { border-bottom: 1px solid var(--line); }
   .telemetry-grid > div:nth-last-child(-n + 2) { border-bottom: 0; }
   .command-grid { grid-template-columns: 1fr; }
+  .camera-test-result { grid-template-columns: 1fr; }
+  .camera-test-copy { border-right: 0; border-bottom: 1px solid var(--line); }
+  .camera-test-photo, .camera-test-photo img { min-height: 210px; }
   .event-photo, .event-photo img { min-height: 300px; }
   .photo-overlay { grid-template-columns: 1fr 1fr; }
   .photo-overlay .overlay-plate { grid-column: 1 / -1; }

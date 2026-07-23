@@ -43,7 +43,7 @@ class AgentTests(unittest.TestCase):
         os.environ["ROADSAFE_STATE_DIR"] = str(root)
         os.environ["ROADSAFE_LOG_DIR"] = str(root / "logs")
         sys.modules.setdefault("psutil", types.SimpleNamespace())
-        sys.modules.setdefault("requests", types.SimpleNamespace(Response=object, post=lambda *args, **kwargs: None))
+        sys.modules.setdefault("requests", types.SimpleNamespace(Response=object, post=lambda *args, **kwargs: None, put=lambda *args, **kwargs: None))
         cls.module = importlib.import_module("cloud_agent")
         cls.runtime_log = root / "logs" / "cloud-agent.log"
 
@@ -74,6 +74,28 @@ class AgentTests(unittest.TestCase):
     def test_configuration_is_durable(self):
         self.agent.refresh_config()
         self.assertEqual(self.store.get_config("cloud")["speedLimitKph"], 80)
+
+    def test_camera_test_uploads_the_diagnostic_photo(self):
+        image = Path(self.directory.name) / "diagnostic.jpg"
+        image.write_bytes(b"jpeg-test")
+        self.store.create_local_command("camera-command", "capture_test", {})
+        self.store.complete_local_command("camera-command", {"imagePath": str(image)})
+        original_put = self.module.requests.put
+        uploads = []
+        self.module.requests.put = lambda url, **kwargs: uploads.append((url, kwargs["data"].read(), kwargs["headers"])) or FakeResponse({})
+        try:
+            result = self.agent.execute_command({
+                "id": "camera-command",
+                "type": "capture_test",
+                "payload": {
+                    "photoUploadUrl": "https://storage.example/upload",
+                    "photoPath": "diagnostics/unassigned/device/camera-command.jpg",
+                },
+            })
+        finally:
+            self.module.requests.put = original_put
+        self.assertEqual(result["photoPath"], "diagnostics/unassigned/device/camera-command.jpg")
+        self.assertEqual(uploads, [("https://storage.example/upload", b"jpeg-test", {"content-type": "image/jpeg"})])
 
     def test_activation_preserves_hardware_configuration(self):
         output = Path(self.directory.name) / "device.env"

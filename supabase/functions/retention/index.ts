@@ -23,7 +23,29 @@ Deno.serve(async (request) => {
     removedEvents += events.length;
   }
   await supabase.from("device_heartbeats").delete().lt("recorded_at", heartbeatCutoff);
+  let removedDiagnosticPhotos = 0;
+  while (true) {
+    const { data: commands, error: commandError } = await supabase
+      .from("device_commands")
+      .select("id, result")
+      .eq("command_type", "capture_test")
+      .lt("requested_at", cutoff)
+      .in("status", ["completed", "failed", "expired"])
+      .limit(500);
+    if (commandError) return Response.json({ error: commandError.message }, { status: 500 });
+    if (!commands?.length) break;
+    const diagnosticPaths = commands.flatMap((command) => {
+      const result = command.result as Record<string, unknown> | null;
+      return typeof result?.photoPath === "string" ? [result.photoPath] : [];
+    });
+    if (diagnosticPaths.length) {
+      const { error: diagnosticError } = await supabase.storage.from("radar-photos").remove(diagnosticPaths);
+      if (diagnosticError) return Response.json({ error: diagnosticError.message }, { status: 500 });
+      removedDiagnosticPhotos += diagnosticPaths.length;
+    }
+    const { error: commandDeleteError } = await supabase.from("device_commands").delete().in("id", commands.map((command) => command.id));
+    if (commandDeleteError) return Response.json({ error: commandDeleteError.message }, { status: 500 });
+  }
   await supabase.from("device_commands").delete().lt("requested_at", cutoff).in("status", ["completed", "failed", "expired"]);
-  return Response.json({ removedEvents, cutoff });
+  return Response.json({ removedEvents, removedDiagnosticPhotos, cutoff });
 });
-

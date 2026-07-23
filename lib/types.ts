@@ -1,6 +1,7 @@
 export type UserRole = "roadsafe_admin" | "client_admin" | "client_viewer";
 export type DeviceState = "online" | "degraded" | "offline" | "unassigned";
 export type ProcessingState = "not_required" | "pending" | "processing" | "complete" | "failed";
+export type CommandStatus = "pending" | "delivered" | "running" | "completed" | "failed" | "expired";
 export type CommandType =
   | "restart_radar"
   | "reboot_device"
@@ -46,6 +47,16 @@ export interface DeviceAssignmentSummary {
   startsAt: string;
   endsAt: string | null;
   status: "active" | "scheduled";
+}
+
+export interface CameraTestSummary {
+  id: string;
+  status: CommandStatus;
+  requestedAt: string;
+  completedAt: string | null;
+  capturedAt: string | null;
+  photoUrl: string | null;
+  error: string | null;
 }
 
 export interface RadarEvent {

@@ -5,13 +5,14 @@ import { EventTable } from "@/components/event-table";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { formatDateTime } from "@/lib/format";
-import { getDashboardData, getViewerContext } from "@/lib/portal-data";
+import { getDashboardData, getLatestCameraTest, getViewerContext } from "@/lib/portal-data";
 
 export default async function DeviceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [{ id }, data, viewer] = await Promise.all([params, getDashboardData(), getViewerContext()]);
   const device = data.devices.find((item) => item.id === id);
   if (!device) notFound();
   const events = data.recentEvents.filter((event) => event.deviceId === id);
+  const cameraTest = viewer.role === "roadsafe_admin" ? await getLatestCameraTest(device.id) : null;
   return (
     <>
       <PageHeader kicker={device.serialNumber} title={device.name} description={`${device.siteName} · ${device.organizationName ?? "Unassigned"}`} actions={<StatusPill state={device.state} />} />
@@ -26,9 +27,8 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
         </div></article>
         <article className="panel config-panel reveal"><div className="panel-head"><div><span className="eyebrow">Active configuration</span><h2>Site rules</h2></div></div><dl className="config-list"><div><dt>Speed limit</dt><dd>{device.speedLimitKph} km/h</dd></div><div><dt>Direction</dt><dd>Approaching</dd></div><div><dt>Photo rule</dt><dd>Over limit only</dd></div><div><dt>Local queue</dt><dd>{device.queueDepth} pending</dd></div></dl></article>
       </section>
-      {viewer.role === "roadsafe_admin" && <section className="panel reveal section-block"><div className="panel-head"><div><span className="eyebrow">RoadSafe only</span><h2>Remote controls</h2></div></div><CommandPanel deviceId={device.id} /></section>}
+      {viewer.role === "roadsafe_admin" && <section className="panel reveal section-block"><div className="panel-head"><div><span className="eyebrow">RoadSafe only</span><h2>Remote controls</h2></div></div><CommandPanel deviceId={device.id} initialCameraTest={cameraTest} /></section>}
       <section className="panel reveal section-block"><div className="panel-head"><div><span className="eyebrow">Recent activity</span><h2>Device events</h2></div></div><EventTable events={events} /></section>
     </>
   );
 }
-

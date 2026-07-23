@@ -11,6 +11,16 @@ export async function GET(request: Request) {
     if (error) throw error;
     const pendingIds = (data ?? []).filter((item) => item.status === "pending").map((item) => item.id);
     if (pendingIds.length) { const { error: deliveryError } = await admin.from("device_commands").update({ status: "delivered", delivered_at: now }).in("id", pendingIds); if (deliveryError) throw deliveryError; }
-    return Response.json({ commands: (data ?? []).map((item) => ({ id: item.id, type: item.command_type, payload: item.payload, requestedAt: item.requested_at, expiresAt: item.expires_at })) });
+    const commands = await Promise.all((data ?? []).map(async (item) => {
+      let payload = (item.payload as Record<string, unknown> | null) ?? {};
+      if (item.command_type === "capture_test") {
+        const photoPath = `diagnostics/unassigned/${device.id}/${item.id}.jpg`;
+        const { data: upload, error: uploadError } = await admin.storage.from("radar-photos").createSignedUploadUrl(photoPath);
+        if (uploadError) throw uploadError;
+        payload = { ...payload, photoPath, photoUploadUrl: upload.signedUrl };
+      }
+      return { id: item.id, type: item.command_type, payload, requestedAt: item.requested_at, expiresAt: item.expires_at };
+    }));
+    return Response.json({ commands });
   } catch (error) { return apiError(error); }
 }

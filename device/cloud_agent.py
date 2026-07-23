@@ -189,7 +189,19 @@ class Agent:
             while time.monotonic() < deadline:
                 local = self.store.local_command(command_id)
                 if local and local["status"] == "completed":
-                    return json.loads(local["result"] or "{}")
+                    local_result = json.loads(local["result"] or "{}")
+                    image_path = Path(str(local_result.get("imagePath") or ""))
+                    payload = command.get("payload") or {}
+                    upload_url = str(payload.get("photoUploadUrl") or "")
+                    photo_path = str(payload.get("photoPath") or "")
+                    if not image_path.is_file():
+                        raise RuntimeError("test capture did not produce an image")
+                    if not upload_url or not photo_path:
+                        raise RuntimeError("cloud did not provide a diagnostic photo upload")
+                    with image_path.open("rb") as photo:
+                        upload = requests.put(upload_url, data=photo, headers={"content-type": "image/jpeg"}, timeout=(10, 90))
+                    upload.raise_for_status()
+                    return {"photoPath": photo_path, "capturedAt": utc_now()}
                 if local and local["status"] == "failed":
                     raise RuntimeError(local["error"] or "test capture failed")
                 time.sleep(.5)
