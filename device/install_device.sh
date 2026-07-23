@@ -14,6 +14,7 @@ RELEASE_DIR="${INSTALL_ROOT}/releases/${VERSION}"
 install -d -o root -g root -m 0755 "${INSTALL_ROOT}/releases" "${INSTALL_ROOT}/bootstrap"
 install -d -o tomdev -g tomdev -m 0750 /var/lib/roadsafe-radar /var/lib/roadsafe-radar/spool /var/lib/roadsafe-radar/updates /var/log/roadsafe-radar
 install -d -o root -g tomdev -m 0750 /etc/roadsafe-radar
+chown -R tomdev:tomdev /var/lib/roadsafe-radar /var/log/roadsafe-radar
 
 if [[ -f /home/tomdev/Documents/SpeedRadarProject/radar_real_ocr.py && ! -f "${INSTALL_ROOT}/bootstrap/pre-cloud-radar_real_ocr.py" ]]; then
   install -o root -g root -m 0644 /home/tomdev/Documents/SpeedRadarProject/radar_real_ocr.py "${INSTALL_ROOT}/bootstrap/pre-cloud-radar_real_ocr.py"
@@ -45,6 +46,9 @@ if ! grep -Eq '^ROADSAFE_DEVICE_ID=.+$' /etc/roadsafe-radar/device.env \
   echo "Set the real HIKVISION_RTSP_URL, activate the device, then run this installer again." >&2
   exit 2
 fi
+
+chown root:tomdev /etc/roadsafe-radar/device.env
+chmod 0640 /etc/roadsafe-radar/device.env
 
 install -o root -g root -m 0644 "${DEVICE_SOURCE}/systemd/run_radar.service" /etc/systemd/system/run_radar.service
 install -o root -g root -m 0644 "${DEVICE_SOURCE}/systemd/roadsafe-cloud-agent.service" /etc/systemd/system/roadsafe-cloud-agent.service

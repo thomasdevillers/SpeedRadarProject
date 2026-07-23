@@ -34,20 +34,32 @@ HEARTBEAT_SECONDS = int(os.getenv("ROADSAFE_HEARTBEAT_SECONDS", "60"))
 COMMAND_POLL_SECONDS = int(os.getenv("ROADSAFE_COMMAND_POLL_SECONDS", "15"))
 CONFIG_REFRESH_SECONDS = int(os.getenv("ROADSAFE_CONFIG_REFRESH_SECONDS", "300"))
 
-for directory in (SPOOL_DIR, STATE_DIR, LOG_DIR):
-    directory.mkdir(parents=True, exist_ok=True)
-
 logger = logging.getLogger("roadsafe.agent")
 logger.setLevel(logging.INFO)
-formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
-console = logging.StreamHandler()
-console.setFormatter(formatter)
-logger.addHandler(console)
-file_handler = TimedRotatingFileHandler(LOG_DIR / "cloud-agent.log", when="midnight", backupCount=14)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+logger.addHandler(logging.NullHandler())
 
 running = True
+
+
+def configure_runtime_logging() -> None:
+    """Create runtime paths only when starting the long-running service.
+
+    The activation command is intentionally side-effect free outside its
+    credential output. It is normally run with sudo and must not leave
+    root-owned runtime logs behind for the unprivileged service.
+    """
+    for directory in (SPOOL_DIR, STATE_DIR, LOG_DIR):
+        directory.mkdir(parents=True, exist_ok=True)
+    if getattr(configure_runtime_logging, "configured", False):
+        return
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+    console = logging.StreamHandler()
+    console.setFormatter(formatter)
+    logger.addHandler(console)
+    file_handler = TimedRotatingFileHandler(LOG_DIR / "cloud-agent.log", when="midnight", backupCount=14)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    configure_runtime_logging.configured = True
 
 
 def stop(_signum=None, _frame=None) -> None:
@@ -282,6 +294,7 @@ def main() -> None:
         activate(args.api_url, args.token, args.output)
         return
 
+    configure_runtime_logging()
     api_url = os.environ.get("ROADSAFE_API_URL")
     device_id = os.environ.get("ROADSAFE_DEVICE_ID")
     device_secret = os.environ.get("ROADSAFE_DEVICE_SECRET")

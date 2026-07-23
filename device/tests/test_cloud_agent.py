@@ -45,6 +45,7 @@ class AgentTests(unittest.TestCase):
         sys.modules.setdefault("psutil", types.SimpleNamespace())
         sys.modules.setdefault("requests", types.SimpleNamespace(Response=object, post=lambda *args, **kwargs: None))
         cls.module = importlib.import_module("cloud_agent")
+        cls.runtime_log = root / "logs" / "cloud-agent.log"
 
     @classmethod
     def tearDownClass(cls):
@@ -66,6 +67,9 @@ class AgentTests(unittest.TestCase):
         self.agent.upload_pending_events()
         self.assertEqual(self.store.queue_depth(), 0)
         self.assertEqual(self.api.requests[0][1], "/api/device/v1/events")
+
+    def test_import_does_not_create_a_privileged_runtime_log(self):
+        self.assertFalse(self.runtime_log.exists())
 
     def test_configuration_is_durable(self):
         self.agent.refresh_config()
