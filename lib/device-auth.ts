@@ -34,6 +34,7 @@ export function apiError(error: unknown): Response {
   if (code === "23505") return Response.json({ error: "A record with these details already exists." }, { status: 409 });
   if (code === "P0002") return Response.json({ error: message }, { status: 404 });
   if (code === "P0001") return Response.json({ error: message }, { status: 409 });
+  if (code === "42501") return Response.json({ error: message }, { status: 403 });
   if (["23503", "23514", "22P02"].includes(code)) return Response.json({ error: message }, { status: 400 });
   return Response.json({ error: "Request could not be completed" }, { status: 500 });
 }

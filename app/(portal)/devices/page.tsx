@@ -5,12 +5,13 @@ import { getDashboardData } from "@/lib/portal-data";
 export const metadata = { title: "Radars" };
 
 export default async function DevicesPage() {
-  const { devices } = await getDashboardData();
+  const { devices, role } = await getDashboardData();
+  const canManageSpeedLimit = role === "roadsafe_admin" || role === "client_admin";
   return (
     <>
       <PageHeader kicker="Assigned fleet" title="Speed radars" description="Connectivity, camera readiness, limits and local queue state for every radar assigned to your account." />
       <div className="toolbar"><div className="toolbar-count"><strong>{devices.length}</strong><span>assigned radar{devices.length === 1 ? "" : "s"}</span></div></div>
-      <div className="device-grid wide">{devices.map((device) => <DeviceCard key={device.id} device={device} />)}</div>
+      <div className="device-grid wide">{devices.map((device) => <DeviceCard key={device.id} device={device} canManageSpeedLimit={canManageSpeedLimit} />)}</div>
     </>
   );
 }

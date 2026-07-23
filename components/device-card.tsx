@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Camera, Cpu, Gauge, HardDrive, RadioTower } from "lucide-react";
+import { SpeedLimitControl } from "@/components/speed-limit-control";
 import { StatusPill } from "@/components/status-pill";
 import { timeAgo } from "@/lib/format";
 import type { DeviceSummary } from "@/lib/types";
 
-export function DeviceCard({ device }: { device: DeviceSummary }) {
+export function DeviceCard({ device, canManageSpeedLimit = false }: { device: DeviceSummary; canManageSpeedLimit?: boolean }) {
   return (
     <article className="device-card reveal">
       <div className="device-card-top">
@@ -18,8 +19,8 @@ export function DeviceCard({ device }: { device: DeviceSummary }) {
         <div><HardDrive size={16} /><span>Disk</span><strong>{device.diskUsedPercent ?? "—"}%</strong></div>
         <div><Camera size={16} /><span>Camera</span><strong>{device.cameraConnected ? "Ready" : "Fault"}</strong></div>
       </div>
+      {canManageSpeedLimit && <SpeedLimitControl deviceId={device.id} currentLimit={device.speedLimitKph} compact />}
       <div className="device-card-foot"><span>Seen {timeAgo(device.lastSeenAt)}</span><Link href={`/devices/${device.id}`}>Open radar <span aria-hidden="true">→</span></Link></div>
     </article>
   );
 }
-

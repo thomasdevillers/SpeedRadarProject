@@ -34,10 +34,24 @@ test("admin can reach client, fleet, and deployment workspaces", async ({ page }
 
 test("camera test displays its uploaded diagnostic frame", async ({ page }) => {
   await page.goto("/devices/rsr-0001");
-  await page.getByRole("button", { name: "Test camera" }).click();
+  const testCamera = page.getByRole("button", { name: "Test camera" });
+  await testCamera.scrollIntoViewIfNeeded();
+  await testCamera.click();
   await expect(page.getByText("Test image captured and uploaded.")).toBeVisible();
   await expect(page.locator(".camera-test-photo img")).toBeVisible();
   await expect(page.getByRole("link", { name: "Open full image" })).toHaveAttribute("href", /demo-photo/);
+});
+
+test("radar speed limits can be updated from the fleet and detail views", async ({ page }) => {
+  await page.goto("/devices");
+  const card = page.locator(".device-card").filter({ hasText: "RSR-0001" });
+  await expect(card.getByRole("spinbutton", { name: "Speed limit in kilometres per hour" })).toHaveValue("60");
+  await card.getByRole("spinbutton", { name: "Speed limit in kilometres per hour" }).fill("70");
+  await card.getByRole("button", { name: "Apply limit" }).click();
+  await expect(card.getByText("Updated to 70 km/h. Sync queued.")).toBeVisible();
+
+  await page.goto("/devices/rsr-0001");
+  await expect(page.getByRole("spinbutton", { name: "Speed limit in kilometres per hour" })).toHaveValue("60");
 });
 
 test("mobile navigation remains usable", async ({ page, isMobile }) => {
@@ -50,5 +64,8 @@ test("mobile navigation remains usable", async ({ page, isMobile }) => {
   const radar = await page.locator('select[name="deviceId"]').boundingBox();
   const client = await page.locator('select[name="organizationId"]').boundingBox();
   expect(client?.y).toBeGreaterThan(radar?.y ?? 0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
+
+  await page.goto("/devices/rsr-0001");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
 });
