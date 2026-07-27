@@ -11,7 +11,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   if (!event) notFound();
   return (
     <>
-      <PageHeader kicker={`Event ${event.deviceEventId.slice(0, 8).toUpperCase()}`} title={`${event.speedKph} km/h detected`} description={`${formatDateTime(event.capturedAt)} · ${event.deviceName} · ${event.siteName}`} actions={event.photoUrl ? <a className="button secondary" href={event.photoUrl} download={`roadsafe-${event.deviceEventId}.jpg`}>Download evidence</a> : undefined} />
+      <PageHeader kicker={`Event ${event.deviceEventId.slice(0, 8).toUpperCase()}`} title={`${event.speedKph} km/h detected`} description={`${formatDateTime(event.capturedAt)} · ${event.deviceName} · ${event.siteName}`} actions={event.photoUrl ? <a className="button secondary" href={`/api/events/${event.id}/evidence`}>Download evidence</a> : undefined} />
       <section className="event-detail-grid">
         <EventPhoto event={event} />
         <aside className="panel event-facts reveal"><div className="panel-head"><div><span className="eyebrow">Verified record</span><h2>Event details</h2></div></div><dl>
