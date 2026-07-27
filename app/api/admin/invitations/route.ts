@@ -7,7 +7,9 @@ export async function POST(request: Request) {
   try {
     const [actor, input] = await Promise.all([requireRoadSafeAdmin(), request.json().then((body) => invitationSchema.parse(body))]);
     const admin = createAdminClient();
-    const { data, error } = await admin.auth.admin.inviteUserByEmail(input.email.toLowerCase(), { data: { name: input.displayName }, redirectTo: `${process.env.DEVICE_API_BASE_URL ?? new URL(request.url).origin}/auth/callback` });
+    const inviteRedirect = new URL("/auth/callback", process.env.DEVICE_API_BASE_URL ?? new URL(request.url).origin);
+    inviteRedirect.searchParams.set("next", "/auth/accept-invite");
+    const { data, error } = await admin.auth.admin.inviteUserByEmail(input.email.toLowerCase(), { data: { name: input.displayName }, redirectTo: inviteRedirect.toString() });
     if (error) throw error;
     if (!data.user) throw new Error("Invitation did not create a user");
     const { error: membershipError } = await admin.from("organization_members").upsert({ organization_id: input.organizationId, user_id: data.user.id, role: input.role });
