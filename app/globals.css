@@ -137,6 +137,9 @@ h3 { margin-bottom: 0; font-size: 1.45rem; line-height: 1; }
 .maximum-panel p { font-size: .77rem; }
 
 .traffic-chart { height: 260px; display: grid; grid-template-columns: repeat(8, 1fr); align-items: end; gap: clamp(7px, 2vw, 20px); padding: 31px 28px 23px; }
+.traffic-chart-empty { height: 260px; display: grid; place-content: center; padding: 31px 28px 23px; text-align: center; background: repeating-linear-gradient(135deg, transparent 0 11px, rgba(25,36,33,.025) 11px 12px); }
+.traffic-chart-empty span { font-family: var(--mono); font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.traffic-chart-empty p { max-width: 330px; margin-top: 8px; color: var(--muted); font-size: .74rem; }
 .bar-column { height: 100%; display: grid; grid-template-rows: 1fr auto; gap: 10px; text-align: center; }
 .bar-track { position: relative; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid var(--line); }
 .bar-total { position: absolute; bottom: 0; width: min(34px, 60%); background: var(--ink-3); transition: height .5s var(--ease); }

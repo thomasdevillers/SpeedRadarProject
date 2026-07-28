@@ -5,6 +5,8 @@ test("RoadSafe dashboard exposes fleet health and event navigation", async ({ pa
   await expect(page.getByRole("heading", { name: "One view. Every vehicle." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "RSR-0001", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "All events" })).toBeVisible();
+  await expect(page.locator(".traffic-chart .bar-total")).toHaveCount(8);
+  await expect(page.locator(".traffic-chart .bar-total").first()).toHaveCSS("height", /.+/);
 
   await page.getByRole("link", { name: "Events", exact: true }).click();
   await expect(page).toHaveURL(/\/events$/);

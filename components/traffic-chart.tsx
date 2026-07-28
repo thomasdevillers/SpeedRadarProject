@@ -1,6 +1,15 @@
 import type { HourlyTrafficPoint } from "@/lib/types";
 
 export function TrafficChart({ data }: { data: HourlyTrafficPoint[] }) {
+  if (data.length === 0) {
+    return (
+      <div className="traffic-chart-empty" role="status">
+        <span>No traffic recorded</span>
+        <p>Hourly volume will appear after the radar captures a vehicle.</p>
+      </div>
+    );
+  }
+
   const maximum = Math.max(...data.map((point) => point.vehicles), 1);
   return (
     <div className="traffic-chart" role="img" aria-label="Hourly traffic and overspeed vehicles">
@@ -16,4 +25,3 @@ export function TrafficChart({ data }: { data: HourlyTrafficPoint[] }) {
     </div>
   );
 }
-
